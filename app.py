@@ -19,5 +19,20 @@ def login():
             return "Login gagal!"
     return render_template("login.html")
 
+@app.route("/register", methods=['GET','POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+        confirm = request.form['confirm_password']
+
+        if password != confirm:
+            return "Password tidak cocok!"
+        else:
+            # sementara hanya test UI
+            return f"Register berhasil! Username: {username}, Email: {email}"
+    return render_template("register.html")
+
 if __name__ == "__main__":
     app.run(debug=True)
