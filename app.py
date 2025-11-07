@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from backend.auth import register_user,login_user
+from backend.superteks_algo import add_note, get_notes
 
 app = Flask(__name__, template_folder='frontend')
 app.secret_key = 'kunci_session_bebas'
@@ -19,10 +20,12 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        success, message = login_user(email, password)
+        success, message, username, user_id = login_user(email, password)
         if success:
             # SET SESSION
             session['user_email'] = email
+            session['username'] = username
+            session['user_id'] = user_id
             return redirect(url_for('index'))
         else:
             error = message
@@ -62,7 +65,20 @@ def index():
     # Cek apakah user sudah login
     if 'user_email' not in session:
         return redirect(url_for('login'))  # jika belum login, arahkan ke login
-    return render_template("index.html", user_email=session['user_email'])
+    user_id = session['user_id']
+    notes = get_notes(user_id)  # sudah mengembalikan list dict dengan title & note didekripsi
+    return render_template("index.html", user_email=session['user_email'],  username = session.get('username', 'Guest'), notes=notes)
+
+@app.route("/add_note", methods=["POST"])
+def add_note_route():
+    if 'user_email' not in session:
+        return redirect(url_for('login'))
+
+    title = request.form['title']
+    note = request.form['note']
+    user_id = session['user_id']  
+    add_note(user_id, title, note)
+    return redirect(url_for('index'))
 
 @app.route("/logout")
 def logout():

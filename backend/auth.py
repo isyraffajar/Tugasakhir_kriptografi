@@ -40,20 +40,22 @@ def login_user(email, password):
     # Enkripsi email input dgn BLOWFISH
     email_enc = encrypt_blowfish(email)
 
-    # Ambil hash password dari database berdasarkan email
-    cursor.execute("SELECT password_hash FROM users WHERE email=%s", (email_enc,))
+    # Ambil hash password dari database berdasarkan email 
+    # Ambil username dan user_id jg untuk session
+    cursor.execute("SELECT user_id, password_hash, username FROM users WHERE email=%s", (email_enc,))
     result = cursor.fetchone()
 
     if not result:
         return False, "Email tidak ditemukan!"
 
-    stored_hash = result[0]
+    user_id, stored_hash, username_enc = result
+    username = decrypt_blowfish(username_enc)  # dekripsi username
 
     # Hash password input
     password_hash = hashlib.sha512(password.encode()).hexdigest()
 
     # Cek kecocokan
     if password_hash == stored_hash:
-        return True, "Login berhasil!"
+        return True, "Login berhasil!", username, user_id
     else:
-        return False, "Password salah!"
+        return False, "Password salah!", None, None

@@ -50,8 +50,9 @@
 
             <div class="sidebar-footer">
                 <a href="#" class="profile-link">
-                    <img src="https://via.placeholder.com/40" alt="Profile" class="profile-img">
-                    <span class="profile-name">User</span>
+                    <img src="{{ url_for('static', filename='img/default-profile.png') }}" alt="Profile"
+                        class="profile-img">
+                    <span class="profile-name">{{ username }}</span>
                 </a>
                 <a href="{{ url_for('logout') }}" class="logout-btn" onclick="return confirmLogout()">
                     <i class="bi bi-box-arrow-right"></i>
@@ -202,7 +203,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
+                            <!-- <div class="col-lg-4">
                                 <div class="card content-card">
                                     <div class="card-header">
                                         <h5 class="card-title mb-0">Keamanan</h5>
@@ -231,7 +232,7 @@
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </section>
@@ -241,27 +242,64 @@
                     <div class="container-fluid">
                         <div class="section-header">
                             <h2 class="section-title">Catatan Pribadi</h2>
-                            <button class="btn btn-primary">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newNoteModal">
                                 <i class="bi bi-plus-lg"></i> Catatan Baru
                             </button>
+
+                            <!-- Modal Catatan Baru -->
+                            <div class="modal fade" id="newNoteModal" tabindex="-1" aria-labelledby="newNoteModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form id="newNoteForm" method="POST" action="{{ url_for('add_note_route') }}">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="newNoteModalLabel">Catatan Baru</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="noteTitle" class="form-label">Judul Catatan</label>
+                                                    <input type="text" class="form-control" id="noteTitle" name="title"
+                                                        required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="noteContent" class="form-label">Isi Catatan</label>
+                                                    <textarea class="form-control" id="noteContent" name="note" rows="5"
+                                                        required></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Batal</button>
+                                                <button type="submit" class="btn btn-primary">Simpan Catatan</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End of Modal Catatan baru -->
+
                         </div>
                         <div class="row">
+                            {% for note in notes %}
                             <div class="col-md-6 col-lg-4 mb-4">
                                 <div class="note-card">
                                     <div class="note-header">
-                                        <h5 class="note-title">Rencana Proyek</h5>
+                                        <h5 class="note-title">{{ note.title }}</h5>
                                         <button class="btn-icon-small">
                                             <i class="bi bi-three-dots"></i>
                                         </button>
                                     </div>
                                     <div class="note-content">
-                                        <p>Rencanakan fitur enkripsi dan dashboard untuk aplikasi...</p>
+                                        <p>{{ note.note }}</p>
                                     </div>
                                     <div class="note-footer">
-                                        <small>2024-11-05 10:30</small>
+                                        <small>{{ note.created_at }}</small>
                                     </div>
                                 </div>
                             </div>
+                            {% endfor %}
                             <div class="col-md-6 col-lg-4 mb-4">
                                 <div class="note-card">
                                     <div class="note-header">
@@ -297,6 +335,7 @@
                         </div>
                     </div>
                 </section>
+                <!-- End of MyNotes Section -->
 
                 <!-- MyFile Section -->
                 <section id="myfiles-section" class="section">
