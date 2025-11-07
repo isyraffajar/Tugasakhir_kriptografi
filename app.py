@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import io
 
 # Impor fungsi-fungsi Anda
-from backend.file_db_ops import add_file, get_files_by_user, get_file_for_download
+from backend.file_db_ops import add_file, get_files_by_user, get_file_for_download, delete_file
 from backend.auth import register_user,login_user
 from backend.superteks_algo import add_note, get_notes
 
@@ -168,6 +168,20 @@ def download_file_route(file_id):
         download_name=filename # Nama file saat di-download
     )
 
+@app.route("/delete_file/<int:file_id>", methods=["POST"])
+def delete_file_route(file_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    user_id = session['user_id']
+    
+    # Panggil fungsi hapus dari file_db_ops
+    if delete_file(user_id, file_id):
+        flash("File berhasil dihapus.", "success")
+    else:
+        flash("Gagal menghapus file. File tidak ditemukan atau Anda tidak memiliki izin.", "danger")
+        
+    return redirect(url_for('dashboard'))
 
 @app.route("/logout")
 def logout():
