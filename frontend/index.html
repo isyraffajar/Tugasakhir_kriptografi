@@ -101,7 +101,7 @@
                                     </div>
                                     <div class="stats-content">
                                         <h6 class="stats-label">Total Catatan</h6>
-                                        <h3 class="stats-value">24</h3>
+                                        <h3 class="stats-value">{{ total_notes }}</h3>
                                     </div>
                                 </div>
                             </div>
@@ -265,8 +265,8 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="noteContent" class="form-label">Isi Catatan</label>
-                                                    <textarea class="form-control" id="noteContent" name="note" rows="5"
-                                                        required></textarea>
+                                                    <textarea class="form-control" id="noteContent" name="note"
+                                                        rows="5"></textarea>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -279,6 +279,41 @@
                                 </div>
                             </div>
                             <!-- End of Modal Catatan baru -->
+
+                            <!-- Modal Detail Note -->
+                            <div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="noteModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <form id="noteForm" method="POST" action="{{ url_for('update_note') }}">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="noteModalLabel">Detail Catatan</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="hidden" name="note_id" id="modalNoteId">
+                                                <div class="mb-3">
+                                                    <label for="modalNoteTitle" class="form-label">Judul</label>
+                                                    <input type="text" class="form-control" id="modalNoteTitle"
+                                                        name="title" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="modalNoteContent" class="form-label">Catatan</label>
+                                                    <textarea class="form-control" id="modalNoteContent" name="note"
+                                                        rows="8" required></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Tutup</button>
+                                                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End of Modal Detail Note -->
 
                         </div>
                         <div class="row">
@@ -300,38 +335,6 @@
                                 </div>
                             </div>
                             {% endfor %}
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <div class="note-card">
-                                    <div class="note-header">
-                                        <h5 class="note-title">Ide Produk</h5>
-                                        <button class="btn-icon-small">
-                                            <i class="bi bi-three-dots"></i>
-                                        </button>
-                                    </div>
-                                    <div class="note-content">
-                                        <p>Aplikasi penyimpanan data terenkripsi dengan berbagai algoritma...</p>
-                                    </div>
-                                    <div class="note-footer">
-                                        <small>2024-11-04 15:20</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <div class="note-card">
-                                    <div class="note-header">
-                                        <h5 class="note-title">Catatan Pribadi</h5>
-                                        <button class="btn-icon-small">
-                                            <i class="bi bi-three-dots"></i>
-                                        </button>
-                                    </div>
-                                    <div class="note-content">
-                                        <p>Ingat untuk mengubah password sebulan sekali...</p>
-                                    </div>
-                                    <div class="note-footer">
-                                        <small>2024-11-03 09:15</small>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </section>
