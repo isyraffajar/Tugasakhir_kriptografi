@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
+from backend.auth import register_user,login_user
 
 app = Flask(__name__, template_folder='frontend')
 
@@ -8,16 +9,19 @@ def home():
 
 @app.route("/login", methods=['GET','POST'])
 def login():
+    error = None
+    email = ""
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
-        # nanti di sini kita cek ke database atau hash password
-        # sementara kita tes UI dulu
-        if username == "admin" and password == "123":
-            return "Login berhasil!"
+
+        success, message = login_user(email, password)
+        if success:
+            return redirect(url_for('index'))
         else:
-            return "Login gagal!"
-    return render_template("login.html")
+            error = message
+
+    return render_template("login.html", error=error, email=email)
 
 @app.route("/register", methods=['GET','POST'])
 def register():
@@ -27,11 +31,21 @@ def register():
         password = request.form['password']
         confirm = request.form['confirm_password']
 
+        if len(password) < 8:
+            return render_template("register.html", error="Password harus minimal 8 karakter!")
+
         if password != confirm:
-            return "Password tidak cocok!"
+            return render_template("register.html", error="Password tidak cocok!")
+        success, message = register_user(username, email, password)
+        if not success:
+            # kirim pesan error ke template
+            return render_template("register.html", error=message)
+    
+        if success:
+            return redirect(url_for("login"))
         else:
-            # sementara hanya test UI
-            return f"Register berhasil! Username: {username}, Email: {email}"
+            return message
+
     return render_template("register.html")
 
 @app.route("/index")
