@@ -109,6 +109,18 @@ def add_note_route():
     add_note(user_id, title, note)
     return redirect(url_for('index'))
 
+@app.route("/update_note", methods=["POST"])
+def update_note_route():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    note_id = request.form['note_id']
+    title = request.form['title']
+    note = request.form['note']
+    user_id = session['user_id']
+
+    return redirect(url_for('index') + "#mynotes-section")
+
 @app.route("/upload_file", methods=["POST"])
 def upload_file_route():
     if 'user_id' not in session:

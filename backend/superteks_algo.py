@@ -77,3 +77,18 @@ def get_notes(user_id):
             "created_at": created_at
         })
     return notes
+
+def update_note(user_id, note_id, title, note):
+    """
+    Update catatan di database dengan enkripsi Playfair + 3DES
+    """
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Enkripsi title & note
+    title_enc = super_encrypt(title, PF_KEY)
+    note_enc = super_encrypt(note, PF_KEY)
+
+    sql = "UPDATE notes SET title=%s, note=%s WHERE note_id=%s AND user_id=%s"
+    cursor.execute(sql, (title_enc, note_enc, note_id, user_id))
+    conn.commit()
