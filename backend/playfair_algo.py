@@ -25,6 +25,9 @@ def generate_playfair_matrix(key: str):
 
     # Bentuk matrix 10x10
     grid_size = 10
+    # Pastikan semua row panjang sama (padding jika perlu)
+    while len(matrix) % grid_size != 0:
+        matrix.append(' ')  # padding karakter agar row penuh
     matrix_grid = [matrix[i:i+grid_size] for i in range(0, len(matrix), grid_size)]
     return matrix_grid
 
@@ -34,6 +37,9 @@ def find_position(matrix, char):
             if c == char:
                 return i, j
     return None, None
+
+def sanitize_text(text):
+    return ''.join(c if c in ASCII_CHARS else ' ' for c in text)
 
 def playfair_encrypt(text, key):
     matrix = generate_playfair_matrix(key)

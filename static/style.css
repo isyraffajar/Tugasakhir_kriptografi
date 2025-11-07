@@ -546,6 +546,9 @@ body {
     font-size: 14px;
     line-height: 1.5;
     margin-bottom: 0;
+    white-space: nowrap;      
+    overflow: hidden;          
+    text-overflow: ellipsis;   
 }
 
 .note-footer {

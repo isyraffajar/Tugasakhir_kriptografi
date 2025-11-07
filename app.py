@@ -95,7 +95,8 @@ def index():
         return redirect(url_for('login'))  # jika belum login, arahkan ke login
     user_id = session['user_id']
     notes = get_notes(user_id)  # sudah mengembalikan list dict dengan title & note didekripsi
-    return render_template("index.html", user_email=session['user_email'],  username = session.get('username', 'Guest'), notes=notes)
+    total_notes = len(notes)
+    return render_template("index.html", user_email=session['user_email'],  username = session.get('username', 'Guest'), notes=notes, total_notes=total_notes)
 
 @app.route("/add_note", methods=["POST"])
 def add_note_route():
@@ -160,7 +161,7 @@ def download_file_route(file_id):
 def logout():
     # Hapus session user
     session.pop('user_email', None)
-    return redirect(url_for('login'))
+    return redirect(url_for('login')) + '#mynotes-section'
 
 if __name__ == "__main__":
     app.run(debug=True)
