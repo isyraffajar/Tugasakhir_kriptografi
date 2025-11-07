@@ -92,3 +92,13 @@ def update_note(user_id, note_id, title, note):
     sql = "UPDATE notes SET title=%s, note=%s WHERE note_id=%s AND user_id=%s"
     cursor.execute(sql, (title_enc, note_enc, note_id, user_id))
     conn.commit()
+
+def delete_note(user_id, note_id):
+    """
+    Hapus catatan berdasarkan note_id dan user_id
+    """
+    conn = get_db()
+    cursor = conn.cursor()
+    sql = "DELETE FROM notes WHERE note_id=%s AND user_id=%s"
+    cursor.execute(sql, (note_id, user_id))
+    conn.commit()

@@ -1,12 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, session
 from flask import Flask, render_template, request, redirect, url_for, session, send_file, flash
 from werkzeug.utils import secure_filename
 import io
 
-# Impor fungsi-fungsi Anda
 from backend.file_db_ops import add_file, get_files_by_user, get_file_for_download
 from backend.auth import register_user,login_user
-from backend.superteks_algo import add_note, get_notes
+from backend.superteks_algo import add_note, get_notes, update_note, delete_note
 
 app = Flask(__name__, template_folder='frontend')
 app.secret_key = 'kunci_session_bebas'
@@ -119,6 +117,21 @@ def update_note_route():
     note = request.form['note']
     user_id = session['user_id']
 
+    update_note(user_id, note_id, title, note)
+
+    return redirect(url_for('index') + "#mynotes-section")
+
+@app.route("/delete_note", methods=["POST"])
+def delete_note_route():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    note_id = request.form['note_id']
+    user_id = session['user_id']
+
+    # Hapus catatan dari database
+    delete_note(user_id, note_id)
+
     return redirect(url_for('index') + "#mynotes-section")
 
 @app.route("/upload_file", methods=["POST"])
@@ -173,7 +186,7 @@ def download_file_route(file_id):
 def logout():
     # Hapus session user
     session.pop('user_email', None)
-    return redirect(url_for('login')) + '#mynotes-section'
+    return redirect(url_for('login'))
 
 if __name__ == "__main__":
     app.run(debug=True)
