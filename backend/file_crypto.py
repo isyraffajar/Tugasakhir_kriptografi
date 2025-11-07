@@ -4,7 +4,7 @@ from Crypto.Util.Padding import pad, unpad
 from Crypto.Random import get_random_bytes
 
 # Kunci CAST-128 (HARUS 16 bytes / 128 bits)
-CAST_KEY = b'ini_kunci_16_byte' 
+CAST_KEY = b'ini_kunci_16_byt' 
 
 # CAST-128 (seperti Blowfish) memiliki blok 8 bytes
 BLOCK_SIZE = CAST.block_size  # Ini akan menjadi 8 bytes

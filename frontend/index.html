@@ -345,7 +345,7 @@
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newFileModal">
                                 <i class="bi bi-upload"></i> Upload File
                             </button>
-                            <!-- Modal Catatan Baru -->
+                            <!-- Modal Files Baru -->
                             <div class="modal fade" id="newFileModal" tabindex="-1" aria-labelledby="newFileModalLabel"
                                 aria-hidden="true">
                                 <div class="modal-dialog">
@@ -397,12 +397,17 @@
                                         <td>{{ file.uploaded_at.strftime('%Y-%m-%d') }}</td>
                                         <td>
                                             <a href="{{ url_for('download_file_route', file_id=file.file_id) }}"
-                                                class="btn btn-sm btn-outline-primary">
+                                                class="btn btn-sm btn-outline-primary" title="Download">
                                                 <i class="bi bi-download"></i>
                                             </a>
-                                            <button class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+
+                                            <form action="{{ url_for('delete_file_route', file_id=file.file_id) }}"
+                                                method="POST" style="display: inline-block;">
+                                                <button type"submit" class="btn btn-sm btn-outline-danger" title="Hapus"
+                                                    onclick="return confirm('Apakah Anda yakin ingin menghapus file \'{{ file.filename }}\' secara permanen?')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                     {% endfor %}

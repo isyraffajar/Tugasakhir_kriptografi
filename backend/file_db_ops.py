@@ -70,3 +70,27 @@ def get_file_for_download(user_id, file_id):
     file_data = decrypt_file_data(file_data_enc)
     
     return filename, file_data
+
+def delete_file(user_id, file_id):
+    """
+    Hapus file dari database, HANYA jika user_id cocok.
+    """
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        # Perintah SQL DELETE
+        # PENTING: Cek user_id DAN file_id untuk keamanan
+        sql = "DELETE FROM files WHERE user_id = %s AND file_id = %s"
+        cursor.execute(sql, (user_id, file_id))
+        conn.commit()
+        
+        # Cek apakah ada baris yang terhapus
+        if cursor.rowcount > 0:
+            return True # Sukses
+        else:
+            return False # Gagal (file tidak ditemukan atau bukan milik user)
+            
+    except Exception as e:
+        print(f"Error saat menghapus file: {e}")
+        return False
