@@ -2,6 +2,7 @@ from Crypto.Cipher import DES3
 from Crypto.Util.Padding import pad, unpad
 from backend.playfair_algo import playfair_encrypt, playfair_decrypt
 from backend.db import get_db
+import base64
 
 
 # ----------------------------
@@ -25,16 +26,18 @@ def decrypt_3des(ciphertext: bytes) -> str:
 
 
 # ----------------------------
-# Super Enkripsi (Playfair + IDEA)
+# Super Enkripsi (Playfair + 3DES)
 # ----------------------------
 def super_encrypt(text: str, pf_key: str) -> bytes:
-    """Enkripsi gabungan: Playfair + IDEA"""
+    """Enkripsi gabungan: Playfair + 3DES"""
     pf_text = playfair_encrypt(text, pf_key)
-    return encrypt_3des(pf_text)
+    ciphertext_bytes = encrypt_3des(pf_text)
+    return base64.b64encode(ciphertext_bytes).decode('utf-8')
 
-def super_decrypt(ciphertext: bytes, pf_key: str) -> str:
-    """Dekripsi gabungan: IDEA -> Playfair"""
-    pf_text = decrypt_3des(ciphertext)
+def super_decrypt(ciphertext_b64: str, pf_key: str) -> str:
+    """Dekripsi gabungan: 3DES -> Playfair"""
+    ciphertext_bytes = base64.b64decode(ciphertext_b64.encode('utf-8'))
+    pf_text = decrypt_3des(ciphertext_bytes)
     return playfair_decrypt(pf_text, pf_key)
 
 
