@@ -53,9 +53,15 @@
                     <img src="https://via.placeholder.com/40" alt="Profile" class="profile-img">
                     <span class="profile-name">User</span>
                 </a>
-                <a href="#" class="logout-btn">
+                <a href="{{ url_for('logout') }}" class="logout-btn" onclick="return confirmLogout()">
                     <i class="bi bi-box-arrow-right"></i>
                 </a>
+                <!-- Event handler untuk logout -->
+                <script>
+                    function confirmLogout() {
+                        return confirm("Apakah Anda yakin ingin logout?");
+                    }
+                </script>
             </div>
         </nav>
 
