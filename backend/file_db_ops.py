@@ -1,0 +1,72 @@
+# file_db_ops.py
+from backend.db import get_db
+# Impor enkripsi/dekripsi filename (bisa pakai yang lama)
+from backend.blowfish_algo import encrypt_blowfish, decrypt_blowfish
+# Impor enkripsi/dekripsi data file (yang BARU)
+from backend.file_crypto import encrypt_file_data, decrypt_file_data
+
+def add_file(user_id, filename_original, file_data):
+    """
+    Enkripsi dan simpan file ke database.
+    """
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # 1. Enkripsi nama file (bisa pakai Blowfish-ECB/Base64 Anda)
+    filename_enc = encrypt_blowfish(filename_original)
+    
+    # 2. Enkripsi data file (WAJIB pakai CBC baru)
+    file_data_enc = encrypt_file_data(file_data)
+    
+    sql = """
+        INSERT INTO files (user_id, filename_original, filename_encrypted, file_data) 
+        VALUES (%s, %s, %s, %s)
+    """
+    # Simpan filename_original terenkripsi dan file_data terenkripsi
+    # Kita simpan filename_original terenkripsi agar bisa didekripsi untuk tampilan
+    cursor.execute(sql, (user_id, filename_enc, "placeholder", file_data_enc))
+    conn.commit()
+
+def get_files_by_user(user_id):
+    """
+    Ambil daftar file untuk user, dekripsi nama filenya untuk ditampilkan.
+    """
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    sql = "SELECT file_id, filename_original, uploaded_at FROM files WHERE user_id=%s ORDER BY uploaded_at DESC"
+    cursor.execute(sql, (user_id,))
+    rows = cursor.fetchall()
+    
+    files = []
+    for file_id, filename_enc, uploaded_at in rows:
+        files.append({
+            "file_id": file_id,
+            "filename": decrypt_blowfish(filename_enc), # Dekripsi nama file
+            "uploaded_at": uploaded_at
+        })
+    return files
+
+def get_file_for_download(user_id, file_id):
+    """
+    Ambil satu file (data dan nama) untuk di-download.
+    """
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    sql = "SELECT filename_original, file_data FROM files WHERE user_id=%s AND file_id=%s"
+    cursor.execute(sql, (user_id, file_id))
+    result = cursor.fetchone()
+    
+    if not result:
+        return None, None
+        
+    filename_enc, file_data_enc = result
+    
+    # 1. Dekripsi nama file
+    filename = decrypt_blowfish(filename_enc)
+    
+    # 2. Dekripsi data file
+    file_data = decrypt_file_data(file_data_enc)
+    
+    return filename, file_data

@@ -342,9 +342,38 @@
                     <div class="container-fluid">
                         <div class="section-header">
                             <h2 class="section-title">File Pribadi</h2>
-                            <button class="btn btn-primary">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newFileModal">
                                 <i class="bi bi-upload"></i> Upload File
                             </button>
+                            <!-- Modal Catatan Baru -->
+                            <div class="modal fade" id="newFileModal" tabindex="-1" aria-labelledby="newFileModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form id="newFileForm" method="POST" action="{{ url_for('upload_file_route') }}"
+                                            enctype="multipart/form-data">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="newFileModalLabel">Upload File Baru</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="fileUpload" class="form-label">Pilih File</label>
+                                                    <input type="file" class="form-control" id="fileUpload" name="file"
+                                                        required>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Batal</button>
+                                                <button type="submit" class="btn btn-primary">Upload File</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End of Modal File baru -->
                         </div>
                         <div class="files-grid">
                             <table class="table table-hover">
@@ -358,54 +387,31 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {% for file in files %}
                                     <tr>
                                         <td>
-                                            <i class="bi bi-file-pdf"></i> Resume.pdf
+                                            <i class="bi bi-file-earmark"></i> {{ file.filename }}
                                         </td>
-                                        <td>PDF</td>
-                                        <td>1.2 MB</td>
-                                        <td>2024-11-05</td>
+                                        <td>File</td>
+                                        <td>-</td>
+                                        <td>{{ file.uploaded_at.strftime('%Y-%m-%d') }}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline-primary">
+                                            <a href="{{ url_for('download_file_route', file_id=file.file_id) }}"
+                                                class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-download"></i>
-                                            </button>
+                                            </a>
                                             <button class="btn btn-sm btn-outline-danger">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </td>
                                     </tr>
+                                    {% endfor %}
+
+                                    {% if not files %}
                                     <tr>
-                                        <td>
-                                            <i class="bi bi-file-excel"></i> Budget2024.xlsx
-                                        </td>
-                                        <td>Excel</td>
-                                        <td>456 KB</td>
-                                        <td>2024-11-04</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-download"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </td>
+                                        <td colspan="5" class="text-center">Belum ada file yang di-upload.</td>
                                     </tr>
-                                    <tr>
-                                        <td>
-                                            <i class="bi bi-file-word"></i> Contract.docx
-                                        </td>
-                                        <td>Word</td>
-                                        <td>890 KB</td>
-                                        <td>2024-11-03</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-download"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
+                                    {% endif %}
                                 </tbody>
                             </table>
                         </div>

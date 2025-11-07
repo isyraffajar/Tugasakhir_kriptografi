@@ -1,9 +1,37 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, send_file, flash
+from werkzeug.utils import secure_filename
+import io
+
+# Impor fungsi-fungsi Anda
+from backend.file_db_ops import add_file, get_files_by_user, get_file_for_download
 from backend.auth import register_user,login_user
 from backend.superteks_algo import add_note, get_notes
 
 app = Flask(__name__, template_folder='frontend')
 app.secret_key = 'kunci_session_bebas'
+
+# ... Rute login, register, logout Anda ...
+
+@app.route("/dashboard")
+def dashboard():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    user_id = session['user_id']
+    username = session['username']
+    
+    # Ambil catatan
+    notes = get_notes(user_id)
+    
+    # BARU: Ambil file
+    files = get_files_by_user(user_id)
+    
+    return render_template("index.html", 
+                           username=username, 
+                           notes=notes, 
+                           files=files # Kirim 'files' ke template
+                       )
 
 @app.route("/")
 def home():
@@ -79,6 +107,54 @@ def add_note_route():
     user_id = session['user_id']  
     add_note(user_id, title, note)
     return redirect(url_for('index'))
+
+@app.route("/upload_file", methods=["POST"])
+def upload_file_route():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    if 'file' not in request.files:
+        flash("Tidak ada file yang dipilih", "danger")
+        return redirect(url_for('dashboard'))
+        
+    file = request.files['file']
+    
+    if file.filename == '':
+        flash("Tidak ada file yang dipilih", "danger")
+        return redirect(url_for('dashboard'))
+        
+    if file:
+        user_id = session['user_id']
+        filename = secure_filename(file.filename) # Ambil nama file asli
+        file_data = file.read() # Baca data biner file
+        
+        # Panggil fungsi DB Anda
+        add_file(user_id, filename, file_data)
+        
+        flash("File berhasil di-upload dan dienkripsi!", "success")
+        
+    return redirect(url_for('dashboard')) # Arahkan kembali ke dashboard
+
+@app.route("/download_file/<int:file_id>")
+def download_file_route(file_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    user_id = session['user_id']
+    
+    filename, file_data = get_file_for_download(user_id, file_id)
+    
+    if filename is None:
+        flash("File tidak ditemukan atau Anda tidak punya akses.", "danger")
+        return redirect(url_for('dashboard'))
+        
+    # Kirim file kembali ke browser
+    return send_file(
+        io.BytesIO(file_data),
+        as_attachment=True,
+        download_name=filename # Nama file saat di-download
+    )
+
 
 @app.route("/logout")
 def logout():
