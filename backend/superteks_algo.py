@@ -44,7 +44,7 @@ def super_decrypt(ciphertext_b64: str, pf_key: str) -> str:
 # ----------------------------
 # Implementasi ke database
 # ----------------------------
-PF_KEY = "uaskriptoplayfair"
+PF_KEY = "uaskriptop"
 
 def add_note(user_id, title, note):
     conn = get_db()

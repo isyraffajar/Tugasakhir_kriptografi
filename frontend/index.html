@@ -327,11 +327,16 @@
                                         <p>{{ note.note }}</p>
                                     </div>
                                     <div class="note-footer">
-                                        <small>Created at {{ note.created_at }} last updated at </small>
+                                        <small>Created at {{ note.created_at }}</small>
                                     </div>
                                 </div>
                             </div>
                             {% endfor %}
+                            {% if not notes %}
+                            <table class="table table-hover">
+                                <td colspan="5" class="text-center">Belum ada catatan yang di-upload.</td>
+                            </table>
+                            {% endif %}
                         </div>
                     </div>
                 </section>
