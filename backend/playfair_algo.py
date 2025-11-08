@@ -38,9 +38,6 @@ def find_position(matrix, char):
                 return i, j
     return None, None
 
-def sanitize_text(text):
-    return ''.join(c if c in ASCII_CHARS else ' ' for c in text)
-
 def playfair_encrypt(text, key):
     matrix = generate_playfair_matrix(key)
     result = ""
