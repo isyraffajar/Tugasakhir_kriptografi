@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 import io
 
 # Impor fungsi-fungsi Anda
-from backend.file_db_ops import add_file, get_files_by_user, get_file_for_download
+from backend.file_db_ops import add_file, get_files_by_user, get_file_for_download, delete_file
 from backend.auth import register_user,login_user
 from backend.superteks_algo import add_note, get_notes, update_note, delete_note
 
