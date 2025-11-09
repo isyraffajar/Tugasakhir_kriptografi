@@ -1,5 +1,5 @@
 // Navigation Section Switching
-document.querySelectorAll('.nav-link').forEach(link => {
+document.querySelectorAll('.sidebar .nav-link').forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
 
@@ -29,6 +29,29 @@ document.querySelectorAll('.nav-link').forEach(link => {
 
         // Show selected section
         document.getElementById(`${sectionName}-section`).classList.add('active');
+
+        // --- sinkronisasi khusus untuk MyStegano ---
+        if (sectionName === 'mystegano') {
+            // tombol tab
+            const hideTabBtn = document.getElementById('hide-tab');
+            const revealTabBtn = document.getElementById('reveal-tab');
+
+            // pastikan hanya hide-tab yang aktif secara visual di awal
+            hideTabBtn.classList.add('active');
+            revealTabBtn.classList.remove('active');
+
+            // paksa Bootstrap untuk "menunjukkan" panel hide agar state internalnya sinkron
+            // (butuh bootstrap.bundle.min.js sudah ter-load)
+            try {
+                const tabInstance = new bootstrap.Tab(hideTabBtn);
+                tabInstance.show();
+            } catch (err) {
+                // fallback ringan: set class manual jika bootstrap belum tersedia
+                document.getElementById('hide-panel').classList.add('show', 'active');
+                document.getElementById('reveal-panel').classList.remove('show', 'active');
+                console.warn('Bootstrap Tab API tidak tersedia, menggunakan fallback class toggle.');
+            }
+        }
 
         // Close sidebar on mobile
         const sidebar = document.querySelector('.sidebar');
@@ -129,86 +152,95 @@ const messageInput = document.getElementById("messageInput")
 
 // Upload area click handler
 uploadArea.addEventListener("click", () => {
-  imageInput.click()
+    imageInput.click()
 })
 
 // Drag and drop
 uploadArea.addEventListener("dragover", (e) => {
-  e.preventDefault()
-  uploadArea.style.borderColor = "#667eea"
-  uploadArea.style.backgroundColor = "#f8f9ff"
+    e.preventDefault()
+    uploadArea.style.borderColor = "#667eea"
+    uploadArea.style.backgroundColor = "#f8f9ff"
 })
 
 uploadArea.addEventListener("dragleave", () => {
-  uploadArea.style.borderColor = "#ccc"
-  uploadArea.style.backgroundColor = "transparent"
+    uploadArea.style.borderColor = "#ccc"
+    uploadArea.style.backgroundColor = "transparent"
 })
 
 uploadArea.addEventListener("drop", (e) => {
-  e.preventDefault()
-  uploadArea.style.borderColor = "#ccc"
-  uploadArea.style.backgroundColor = "transparent"
+    e.preventDefault()
+    uploadArea.style.borderColor = "#ccc"
+    uploadArea.style.backgroundColor = "transparent"
 
-  const files = e.dataTransfer.files
-  if (files.length > 0) {
-    imageInput.files = files
-    handleImageSelect()
-  }
+    const files = e.dataTransfer.files
+    if (files.length > 0) {
+        imageInput.files = files
+        handleImageSelect()
+    }
 })
 
 // Image input change handler
 imageInput.addEventListener("change", handleImageSelect)
 
 function handleImageSelect() {
-  const file = imageInput.files[0]
-  if (file) {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      previewImage.src = e.target.result
-      imagePreview.style.display = "block"
+    const file = imageInput.files[0]
+    if (file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+            previewImage.src = e.target.result
+            imagePreview.style.display = "block"
+        }
+        reader.readAsDataURL(file)
     }
-    reader.readAsDataURL(file)
-  }
 }
 
 // Remove image button
 removeImageBtn.addEventListener("click", () => {
-  imageInput.value = ""
-  imagePreview.style.display = "none"
+    imageInput.value = ""
+    imagePreview.style.display = "none"
 })
 
-// Hide message form submit - UI validation only
+// Hide message form submit 
 hideMessageForm.addEventListener("submit", async (e) => {
-  e.preventDefault()
+    e.preventDefault();
 
-  const message = messageInput.value.trim()
-  if (!message) {
-    alert("Silakan masukkan pesan")
-    return
-  }
+    const message = messageInput.value.trim();
+    const file = imageInput.files[0];
 
-  if (!imageInput.files[0]) {
-    alert("Silakan pilih gambar")
-    return
-  }
+    if (!message || !file) return alert("Lengkapi pesan dan gambar!");
 
-  if (message.length > 1000) {
-    alert("Pesan terlalu panjang (maksimal 1000 karakter)")
-    return
-  }
+    const formData = new FormData();
+    formData.append("message", message);
+    formData.append("cover", file);
 
-  // Send to backend API for steganography encoding
-  console.log("[v0] Form ready for backend submission")
-  console.log("[v0] Message length:", message.length)
-  console.log("[v0] Image file:", imageInput.files[0].name)
+    try {
+        const response = await fetch("/steg_hide", {
+            method: "POST",
+            body: formData
+        });
 
-  // TODO: Replace with actual backend API call
-  // Example:
-  // const formData = new FormData(hideMessageForm)
-  // const response = await fetch('/api/stegano/hide', { method: 'POST', body: formData })
+        if (!response.ok) {
+            const errText = await response.text();
+            return alert("Gagal: " + errText);
+        }
 
-  alert("Form siap untuk diproses di backend! Silakan integrasikan dengan API Anda.")
-})
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "stego.jpeg"; 
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
+        alert("Pesan berhasil disembunyikan!");
+    } catch (error) {
+        console.error(error);
+        alert("Terjadi error saat mengirim ke server");
+    }
+});
+
 
 // Reveal Message Form
 const revealMessageForm = document.getElementById("revealMessageForm")
@@ -219,99 +251,125 @@ const revealPreviewImage = document.getElementById("revealPreviewImage")
 const removeRevealImageBtn = document.getElementById("removeRevealImageBtn")
 const revealResult = document.getElementById("revealResult")
 const noMessageAlert = document.getElementById("noMessageAlert")
-const revealedMessage = document.getElementById("revealedMessage")
+const revealedMessage = document.getElementById("extracted-message")
 
 // Upload area click handler for reveal
 uploadAreaReveal.addEventListener("click", () => {
-  revealImageInput.click()
+    revealImageInput.click()
 })
 
 // Drag and drop for reveal
 uploadAreaReveal.addEventListener("dragover", (e) => {
-  e.preventDefault()
-  uploadAreaReveal.style.borderColor = "#667eea"
-  uploadAreaReveal.style.backgroundColor = "#f8f9ff"
+    e.preventDefault()
+    uploadAreaReveal.style.borderColor = "#667eea"
+    uploadAreaReveal.style.backgroundColor = "#f8f9ff"
 })
 
 uploadAreaReveal.addEventListener("dragleave", () => {
-  uploadAreaReveal.style.borderColor = "#ccc"
-  uploadAreaReveal.style.backgroundColor = "transparent"
+    uploadAreaReveal.style.borderColor = "#ccc"
+    uploadAreaReveal.style.backgroundColor = "transparent"
 })
 
 uploadAreaReveal.addEventListener("drop", (e) => {
-  e.preventDefault()
-  uploadAreaReveal.style.borderColor = "#ccc"
-  uploadAreaReveal.style.backgroundColor = "transparent"
+    e.preventDefault()
+    uploadAreaReveal.style.borderColor = "#ccc"
+    uploadAreaReveal.style.backgroundColor = "transparent"
 
-  const files = e.dataTransfer.files
-  if (files.length > 0) {
-    revealImageInput.files = files
-    handleRevealImageSelect()
-  }
+    const files = e.dataTransfer.files
+    if (files.length > 0) {
+        revealImageInput.files = files
+        handleRevealImageSelect()
+    }
 })
 
 // Image input change for reveal
 revealImageInput.addEventListener("change", handleRevealImageSelect)
 
 function handleRevealImageSelect() {
-  const file = revealImageInput.files[0]
-  if (file) {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      revealPreviewImage.src = e.target.result
-      revealImagePreview.style.display = "block"
+    const file = revealImageInput.files[0]
+    if (file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+            revealPreviewImage.src = e.target.result
+            revealImagePreview.style.display = "block"
+        }
+        reader.readAsDataURL(file)
     }
-    reader.readAsDataURL(file)
-  }
 }
 
 // Remove reveal image button
 removeRevealImageBtn.addEventListener("click", () => {
-  revealImageInput.value = ""
-  revealImagePreview.style.display = "none"
-  revealResult.style.display = "none"
-  noMessageAlert.style.display = "none"
+    revealImageInput.value = ""
+    revealImagePreview.style.display = "none"
+    revealResult.style.display = "none"
+    noMessageAlert.style.display = "none"
 })
 
-// Reveal message form submit - UI validation only
+// Reveal message form submit 
+// Reveal message form submit 
 revealMessageForm.addEventListener("submit", async (e) => {
-  e.preventDefault()
+    e.preventDefault();
 
-  if (!revealImageInput.files[0]) {
-    alert("Silakan pilih gambar")
-    return
-  }
+    if (!revealImageInput.files[0]) {
+        console.log("[DEBUG] Tidak ada file gambar dipilih");
+        return alert("Pilih gambar terlebih dahulu!");
+    }
 
-  // Send to backend API for steganography decoding
-  console.log("[v0] Form ready for backend submission")
-  console.log("[v0] Image file:", revealImageInput.files[0].name)
+    const formData = new FormData();
+    formData.append("stego", revealImageInput.files[0]);
 
-  // TODO: Replace with actual backend API call
-  // Example:
-  // const formData = new FormData(revealMessageForm)
-  // const response = await fetch('/api/stegano/reveal', { method: 'POST', body: formData })
-  // const data = await response.json()
-  // if (data.message) {
-  //   revealedMessage.textContent = data.message
-  //   revealResult.style.display = "block"
-  //   noMessageAlert.style.display = "none"
-  // } else {
-  //   revealResult.style.display = "none"
-  //   noMessageAlert.style.display = "block"
-  // }
+    try {
+        const response = await fetch("/steg_extract", {
+            method: "POST",
+            body: formData
+        });
 
-  alert("Form siap untuk diproses di backend! Silakan integrasikan dengan API Anda.")
-})
+        console.log("[DEBUG] Response status:", response.status);
+
+        if (!response.ok) {
+            const errText = await response.text();
+            console.warn("[DEBUG] Response not OK:", errText);
+            noMessageAlert.style.display = "block";
+            revealResult.style.display = "none";
+            return;
+        }
+
+        // Response berisi HTML dari Flask
+        const text = await response.text();
+        console.log("[DEBUG] Response text snippet:", text.substring(0, 200));
+
+        // Ambil pesan dari HTML (dari template)
+        const parser = new DOMParser();
+        const htmlDoc = parser.parseFromString(text, "text/html");
+        const msg = htmlDoc.querySelector("#extracted-message")?.textContent || "";
+
+        console.log("[DEBUG] Extracted message:", msg);
+
+        if (msg.trim() !== "") {
+            revealedMessage.textContent = msg;
+            revealResult.style.display = "block";
+            noMessageAlert.style.display = "none";
+        } else {
+            console.warn("[DEBUG] Pesan kosong, menampilkan noMessageAlert");
+            revealResult.style.display = "none";
+            noMessageAlert.style.display = "block";
+        }
+
+    } catch (error) {
+        console.error("[DEBUG] Terjadi error saat fetch:", error);
+        alert("Terjadi error saat mengirim ke server!");
+    }
+});
 
 // Copy message button
 document.getElementById("copyMessageBtn")?.addEventListener("click", () => {
-  const message = revealedMessage.textContent
-  navigator.clipboard
-    .writeText(message)
-    .then(() => {
-      alert("Pesan berhasil disalin ke clipboard!")
-    })
-    .catch((err) => {
-      console.error("Gagal menyalin pesan:", err)
-    })
+    const message = revealedMessage.textContent
+    navigator.clipboard
+        .writeText(message)
+        .then(() => {
+            alert("Pesan berhasil disalin ke clipboard!")
+        })
+        .catch((err) => {
+            console.error("Gagal menyalin pesan:", err)
+        })
 })

@@ -178,32 +178,45 @@ def delete_file_route(file_id):
         
     return redirect(url_for('dashboard'))
 
-@app.route('/steg_hide', methods=['GET','POST'])
+@app.route('/steg_hide', methods=['POST'])
 def steg_hide():
-    if request.method == 'POST':
-        f = request.files.get('cover')
-        message = request.form.get('message', '')
-        if not f or message == '':
-            return "Cover image and message required", 400
-        img = Image.open(f.stream).convert('RGB')
-        stego = embed_text_into_image(img, message)
-        out_bytes = pil_image_to_jpeg_bytes(stego, quality=95)
-        return send_file(io.BytesIO(out_bytes), mimetype='image/jpeg', as_attachment=True, download_name='stego.jpg')
-    return render_template('steg_hide.html')
+    f = request.files.get('cover')
+    message = request.form.get('message', '')
 
-@app.route('/steg_extract', methods=['GET','POST'])
+    if not f or message == '':
+        return "Cover image and message required", 400
+
+    img = Image.open(f.stream).convert('RGB')
+    stego = embed_text_into_image(img, message)
+
+    out_bytes = pil_image_to_jpeg_bytes(stego, quality=100)
+
+    return send_file(
+        io.BytesIO(out_bytes),
+        mimetype='image/jpeg',
+        as_attachment=True,
+        download_name='stego.jpeg'
+    )
+
+
+
+@app.route('/steg_extract', methods=['POST'])
 def steg_extract():
-    if request.method == 'POST':
-        f = request.files.get('stego')
-        if not f:
-            return "Stego image required", 400
-        img = Image.open(f.stream).convert('RGB')
-        try:
-            message = extract_text_from_image(img)
-        except Exception as e:
-            return f"Failed to extract: {e}", 400
-        return render_template('steg_extracted.html', message=message)
-    return render_template('steg_extract.html')
+    f = request.files.get('stego')
+    if not f:
+        return "Stego image required", 400
+
+    img = Image.open(f.stream).convert('RGB')
+    try:
+        message = extract_text_from_image(img)
+        print("=== DEBUG EXTRACT ===")
+        print("Extracted message:", message)
+    except Exception as e:
+        print("=== DEBUG EXTRACT ERROR ===", e)
+        return render_template('index.html', extract_error=f"Gagal ekstrak: {e}")
+
+    return render_template('index.html', extracted_message=message, active_tab="reveal")
+
 
 @app.route("/logout")
 def logout():

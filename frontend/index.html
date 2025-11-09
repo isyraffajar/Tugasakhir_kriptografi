@@ -452,6 +452,7 @@
                             </li>
                         </ul>
 
+
                         <!-- Tab Content -->
                         <div class="tab-content" id="steganoTabContent">
                             <!-- Hide Message Tab -->
@@ -513,7 +514,8 @@
                                                     <div>
                                                         <strong>Cara Kerja</strong>
                                                         <p class="mb-0">Pesan Anda akan disembunyikan dalam pixel gambar
-                                                            menggunakan teknik steganografi DCT (Discrete Cosine Transform).
+                                                            menggunakan teknik steganografi DCT (Discrete Cosine
+                                                            Transform).
                                                         </p>
                                                     </div>
                                                 </div>
@@ -582,7 +584,7 @@
                                                         <strong>Pesan Tersembunyi:</strong>
                                                     </div>
                                                     <div class="result-message-box">
-                                                        <p id="revealedMessage"></p>
+                                                        <p id="extracted-message">{{ extracted_message }}</p>
                                                     </div>
                                                     <button type="button" class="btn btn-sm btn-outline-primary mt-2"
                                                         id="copyMessageBtn">
