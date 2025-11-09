@@ -76,8 +76,18 @@ def index():
     files = get_files_by_user(user_id)
     total_notes = len(notes)
     total_files = len(files)
-    return render_template("index.html", user_email=session['user_email'],  username=username, notes=notes, total_notes=total_notes, files=files, total_files=total_files)
-
+    
+    # Ambil 3 file terbaru untuk ditampilkan di dashboard
+    latest_files = files[:3] if len(files) > 3 else files
+    
+    return render_template("index.html", 
+                         user_email=session['user_email'],  
+                         username=username, 
+                         notes=notes, 
+                         total_notes=total_notes, 
+                         files=files, 
+                         total_files=total_files,
+                         latest_files=latest_files)
 @app.route("/add_note", methods=["POST"])
 def add_note_route():
     if 'user_email' not in session:

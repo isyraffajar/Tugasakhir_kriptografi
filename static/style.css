@@ -1032,3 +1032,53 @@ a:hover {
     color: #666;
     margin: 0;
 }
+
+/* Activity List Styles */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid #667eea;
+}
+
+.activity-icon {
+    width: 32px;
+    height: 32px;
+    background-color: white;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-content p {
+    margin-bottom: 4px;
+    font-size: 14px;
+    color: #333;
+}
+
+.activity-content small {
+    color: #666;
+    font-size: 12px;
+}
+
+/* File Icon Colors */
+.bi-file-pdf { color: #dc3545; }
+.bi-file-word { color: #2b579a; }
+.bi-file-excel { color: #217346; }
+.bi-file-image { color: #e83e8c; }
+.bi-file-earmark { color: #6c757d; }

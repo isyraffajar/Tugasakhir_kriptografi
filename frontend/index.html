@@ -94,7 +94,7 @@
                 <section id="dashboard-section" class="section active">
                     <div class="container-fluid">
                         <div class="row mb-4">
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="stats-card">
                                     <div class="stats-icon notes-icon">
                                         <i class="bi bi-file-text"></i>
@@ -105,7 +105,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="stats-card">
                                     <div class="stats-icon files-icon">
                                         <i class="bi bi-folder"></i>
@@ -113,28 +113,6 @@
                                     <div class="stats-content">
                                         <h6 class="stats-label">Total File</h6>
                                         <h3 class="stats-value">{{ total_files }}</h3>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stats-card">
-                                    <div class="stats-icon pictures-icon">
-                                        <i class="bi bi-image"></i>
-                                    </div>
-                                    <div class="stats-content">
-                                        <h6 class="stats-label">Total Gambar</h6>
-                                        <h3 class="stats-value">45</h3>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stats-card">
-                                    <div class="stats-icon storage-icon">
-                                        <i class="bi bi-hdd"></i>
-                                    </div>
-                                    <div class="stats-content">
-                                        <h6 class="stats-label">Penyimpanan</h6>
-                                        <h3 class="stats-value">2.5 GB</h3>
                                     </div>
                                 </div>
                             </div>
@@ -147,59 +125,100 @@
                                         <h5 class="card-title mb-0">File Terbaru</h5>
                                     </div>
                                     <div class="card-body">
+                                        {% if latest_files %}
                                         <div class="file-list">
+                                            {% for file in latest_files %}
                                             <div class="file-item">
                                                 <div class="file-icon">
+                                                    {% if file.filename.lower().endswith('.pdf') %}
                                                     <i class="bi bi-file-pdf"></i>
-                                                </div>
-                                                <div class="file-info">
-                                                    <h6 class="file-name">Document.pdf</h6>
-                                                    <small class="file-date">2024-11-05 | 2.5 MB</small>
-                                                </div>
-                                                <div class="file-actions">
-                                                    <button class="btn-icon" title="Download">
-                                                        <i class="bi bi-download"></i>
-                                                    </button>
-                                                    <button class="btn-icon" title="Delete">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="file-item">
-                                                <div class="file-icon">
+                                                    {% elif file.filename.lower().endswith(('.doc', '.docx')) %}
                                                     <i class="bi bi-file-word"></i>
-                                                </div>
-                                                <div class="file-info">
-                                                    <h6 class="file-name">Notes.docx</h6>
-                                                    <small class="file-date">2024-11-04 | 1.2 MB</small>
-                                                </div>
-                                                <div class="file-actions">
-                                                    <button class="btn-icon" title="Download">
-                                                        <i class="bi bi-download"></i>
-                                                    </button>
-                                                    <button class="btn-icon" title="Delete">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="file-item">
-                                                <div class="file-icon">
+                                                    {% elif file.filename.lower().endswith(('.xls', '.xlsx')) %}
                                                     <i class="bi bi-file-excel"></i>
+                                                    {% elif file.filename.lower().endswith(('.jpg', '.jpeg', '.png',
+                                                    '.gif')) %}
+                                                    <i class="bi bi-file-image"></i>
+                                                    {% else %}
+                                                    <i class="bi bi-file-earmark"></i>
+                                                    {% endif %}
                                                 </div>
                                                 <div class="file-info">
-                                                    <h6 class="file-name">Data.xlsx</h6>
-                                                    <small class="file-date">2024-11-03 | 890 KB</small>
+                                                    <h6 class="file-name">{{ file.filename }}</h6>
+                                                    <small class="file-date">{{ file.uploaded_at.strftime('%Y-%m-%d')
+                                                        }}</small>
                                                 </div>
                                                 <div class="file-actions">
-                                                    <button class="btn-icon" title="Download">
+                                                    <a href="{{ url_for('download_file_route', file_id=file.file_id) }}"
+                                                        class="btn-icon" title="Download">
                                                         <i class="bi bi-download"></i>
-                                                    </button>
-                                                    <button class="btn-icon" title="Delete">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
+                                                    </a>
+                                                    <form
+                                                        action="{{ url_for('delete_file_route', file_id=file.file_id) }}"
+                                                        method="POST" style="display: inline;">
+                                                        <button type="submit" class="btn-icon" title="Delete"
+                                                            onclick="return confirm('Hapus file {{ file.filename }}?')">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </div>
+                                            {% endfor %}
                                         </div>
+                                        {% else %}
+                                        <div class="text-center py-4">
+                                            <i class="bi bi-folder-x display-4 text-muted"></i>
+                                            <p class="text-muted mt-3">Belum ada file yang diupload</p>
+                                            <a href="#myfiles" class="btn btn-primary mt-2" data-section="myfiles">
+                                                Upload File Pertama
+                                            </a>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="card content-card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Aktivitas Terkini</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if notes or files %}
+                                        <div class="activity-list">
+                                            {% if notes %}
+                                            <div class="activity-item">
+                                                <div class="activity-icon">
+                                                    <i class="bi bi-file-text text-primary"></i>
+                                                </div>
+                                                <div class="activity-content">
+                                                    <p class="mb-1">Catatan terbaru: <strong>{{ notes[0].title
+                                                            }}</strong></p>
+                                                    <small class="text-muted">{{ notes[0].created_at.strftime('%d %b
+                                                        %Y') }}</small>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            {% if files %}
+                                            <div class="activity-item">
+                                                <div class="activity-icon">
+                                                    <i class="bi bi-file-earmark text-success"></i>
+                                                </div>
+                                                <div class="activity-content">
+                                                    <p class="mb-1">File terbaru: <strong>{{ files[0].filename
+                                                            }}</strong></p>
+                                                    <small class="text-muted">{{ files[0].uploaded_at.strftime('%d %b
+                                                        %Y') }}</small>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        {% else %}
+                                        <div class="text-center py-3">
+                                            <i class="bi bi-clock-history display-4 text-muted"></i>
+                                            <p class="text-muted mt-3">Belum ada aktivitas</p>
+                                        </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
