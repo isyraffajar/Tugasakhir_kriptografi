@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_file, flash
 from werkzeug.utils import secure_filename
-from backend.steganoDCT_algo import embed_text_into_image, extract_text_from_image, pil_image_to_jpeg_bytes
+from backend.EOF_algo import embed_text_eof, extract_text_eof
 from PIL import Image
 import io
 from backend.file_db_ops import add_file, get_files_by_user, get_file_for_download, delete_file
@@ -178,44 +178,32 @@ def delete_file_route(file_id):
         
     return redirect(url_for('dashboard'))
 
-@app.route('/steg_hide', methods=['POST'])
+@app.route("/steg_hide", methods=["POST"])
 def steg_hide():
-    f = request.files.get('cover')
-    message = request.form.get('message', '')
+    f = request.files.get("cover")
+    message = request.form.get("message", "")
+    if not f or not message:
+        return "Gambar dan pesan dibutuhkan", 400
 
-    if not f or message == '':
-        return "Cover image and message required", 400
-
-    img = Image.open(f.stream).convert('RGB')
-    stego = embed_text_into_image(img, message)
-
-    out_bytes = pil_image_to_jpeg_bytes(stego, quality=100)
+    file_bytes = f.read()
+    stego_bytes = embed_text_eof(file_bytes, message)
 
     return send_file(
-        io.BytesIO(out_bytes),
-        mimetype='image/jpeg',
+        io.BytesIO(stego_bytes),
+        mimetype=f.mimetype,
         as_attachment=True,
-        download_name='stego.jpeg'
+        download_name="stego_" + f.filename
     )
 
-
-
-@app.route('/steg_extract', methods=['POST'])
+@app.route("/steg_extract", methods=["POST"])
 def steg_extract():
-    f = request.files.get('stego')
+    f = request.files.get("stego")
     if not f:
-        return "Stego image required", 400
+        return "File stego dibutuhkan", 400
 
-    img = Image.open(f.stream).convert('RGB')
-    try:
-        message = extract_text_from_image(img)
-        print("=== DEBUG EXTRACT ===")
-        print("Extracted message:", message)
-    except Exception as e:
-        print("=== DEBUG EXTRACT ERROR ===", e)
-        return render_template('index.html', extract_error=f"Gagal ekstrak: {e}")
-
-    return render_template('index.html', extracted_message=message, active_tab="reveal")
+    file_bytes = f.read()
+    message = extract_text_eof(file_bytes)
+    return render_template("index.html", extracted_message=message, active_tab="reveal")
 
 
 @app.route("/logout")

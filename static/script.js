@@ -17,7 +17,7 @@ document.querySelectorAll('.sidebar .nav-link').forEach(link => {
             dashboard: 'Dashboard',
             mynotes: 'Catatan Pribadi',
             myfiles: 'File Pribadi',
-            mystegano: 'Sembunyikan pesan'
+            mystegano: 'Pesan Rahasia'
         };
 
         document.querySelector('.page-title').textContent = titles[sectionName] || 'Dashboard';
@@ -228,7 +228,7 @@ hideMessageForm.addEventListener("submit", async (e) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "stego.jpeg"; 
+        a.download = "stego.png"; 
         document.body.appendChild(a);
         a.click();
         a.remove();
