@@ -1,11 +1,9 @@
 # file_db_ops.py
 from backend.db import get_db
-# Impor enkripsi/dekripsi filename (bisa pakai yang lama)
 from backend.blowfish_algo import encrypt_blowfish, decrypt_blowfish
-# Impor enkripsi/dekripsi data file (yang BARU)
 from backend.file_crypto import encrypt_file_data, decrypt_file_data
 
-def add_file(user_id, filename_original, file_data):
+def add_file(user_id, filename, file_data):
     """
     Enkripsi dan simpan file ke database.
     """
@@ -13,18 +11,17 @@ def add_file(user_id, filename_original, file_data):
     cursor = conn.cursor()
     
     # 1. Enkripsi nama file (bisa pakai Blowfish-ECB/Base64 Anda)
-    filename_enc = encrypt_blowfish(filename_original)
+    filename_enc = encrypt_blowfish(filename)
     
     # 2. Enkripsi data file (WAJIB pakai CBC baru)
     file_data_enc = encrypt_file_data(file_data)
     
     sql = """
-        INSERT INTO files (user_id, filename_original, filename_encrypted, file_data) 
-        VALUES (%s, %s, %s, %s)
+        INSERT INTO files (user_id, filename, file_data) 
+        VALUES (%s, %s, %s)
     """
-    # Simpan filename_original terenkripsi dan file_data terenkripsi
-    # Kita simpan filename_original terenkripsi agar bisa didekripsi untuk tampilan
-    cursor.execute(sql, (user_id, filename_enc, "placeholder", file_data_enc))
+    # Simpan filename terenkripsi dan file_data terenkripsi
+    cursor.execute(sql, (user_id, filename_enc, file_data_enc))
     conn.commit()
 
 def get_files_by_user(user_id):
@@ -34,7 +31,7 @@ def get_files_by_user(user_id):
     conn = get_db()
     cursor = conn.cursor()
     
-    sql = "SELECT file_id, filename_original, uploaded_at FROM files WHERE user_id=%s ORDER BY uploaded_at DESC"
+    sql = "SELECT file_id, filename, uploaded_at FROM files WHERE user_id=%s ORDER BY uploaded_at DESC"
     cursor.execute(sql, (user_id,))
     rows = cursor.fetchall()
     
@@ -54,7 +51,7 @@ def get_file_for_download(user_id, file_id):
     conn = get_db()
     cursor = conn.cursor()
     
-    sql = "SELECT filename_original, file_data FROM files WHERE user_id=%s AND file_id=%s"
+    sql = "SELECT filename, file_data FROM files WHERE user_id=%s AND file_id=%s"
     cursor.execute(sql, (user_id, file_id))
     result = cursor.fetchone()
     

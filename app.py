@@ -10,28 +10,6 @@ from backend.superteks_algo import add_note, get_notes, update_note, delete_note
 app = Flask(__name__, template_folder='frontend')
 app.secret_key = 'kunci_session_bebas'
 
-# ... Rute login, register, logout Anda ...
-
-@app.route("/dashboard")
-def dashboard():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-        
-    user_id = session['user_id']
-    username = session['username']
-    
-    # Ambil catatan
-    notes = get_notes(user_id)
-    
-    # BARU: Ambil file
-    files = get_files_by_user(user_id)
-    
-    return render_template("index.html", 
-                           username=username, 
-                           notes=notes, 
-                           files=files # Kirim 'files' ke template
-                       )
-
 @app.route("/")
 def home():
     return redirect(url_for('login'))  # langsung ke login
@@ -93,9 +71,12 @@ def index():
     if 'user_email' not in session:
         return redirect(url_for('login'))  # jika belum login, arahkan ke login
     user_id = session['user_id']
+    username = session.get('username', 'Guest')
     notes = get_notes(user_id)  # sudah mengembalikan list dict dengan title & note didekripsi
+    files = get_files_by_user(user_id)
     total_notes = len(notes)
-    return render_template("index.html", user_email=session['user_email'],  username = session.get('username', 'Guest'), notes=notes, total_notes=total_notes)
+    total_files = len(files)
+    return render_template("index.html", user_email=session['user_email'],  username=username, notes=notes, total_notes=total_notes, files=files, total_files=total_files)
 
 @app.route("/add_note", methods=["POST"])
 def add_note_route():
@@ -160,7 +141,7 @@ def upload_file_route():
         
         flash("File berhasil di-upload dan dienkripsi!", "success")
         
-    return redirect(url_for('dashboard')) # Arahkan kembali ke dashboard
+    return redirect(url_for('index')) # Arahkan kembali ke dashboard
 
 @app.route("/download_file/<int:file_id>")
 def download_file_route(file_id):

@@ -1,6 +1,7 @@
 from Crypto.Cipher import DES3
 from Crypto.Util.Padding import pad, unpad
 from backend.playfair_algo import playfair_encrypt, playfair_decrypt
+from backend.blowfish_algo import encrypt_blowfish, decrypt_blowfish
 from backend.db import get_db
 import base64
 
@@ -51,8 +52,8 @@ def add_note(user_id, title, note):
     cursor = conn.cursor()
     
     # Enkripsi title & note
-    title_enc = super_encrypt(title, PF_KEY)
-    note_enc = super_encrypt(note, PF_KEY)
+    title_enc = encrypt_blowfish(title) # Judul encryptnya pake Blowfish
+    note_enc = super_encrypt(note, PF_KEY) # Note encryptnya pake Playfair + 3DES
     
     sql = "INSERT INTO notes (user_id, title, note) VALUES (%s, %s, %s)"
     cursor.execute(sql, (user_id, title_enc, note_enc))
@@ -68,7 +69,7 @@ def get_notes(user_id):
     
     notes = []
     for note_id, title_enc, note_enc, created_at in rows:
-        title = super_decrypt(title_enc, PF_KEY)
+        title = decrypt_blowfish(title_enc)
         note = super_decrypt(note_enc, PF_KEY)
         notes.append({
             "note_id": note_id,
@@ -86,7 +87,7 @@ def update_note(user_id, note_id, title, note):
     cursor = conn.cursor()
 
     # Enkripsi title & note
-    title_enc = super_encrypt(title, PF_KEY)
+    title_enc = encrypt_blowfish(title)
     note_enc = super_encrypt(note, PF_KEY)
 
     sql = "UPDATE notes SET title=%s, note=%s WHERE note_id=%s AND user_id=%s"
