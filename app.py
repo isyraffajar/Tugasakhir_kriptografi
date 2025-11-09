@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_file, flash
 from werkzeug.utils import secure_filename
+from backend.steganoDCT_algo import embed_text_into_image, extract_text_from_image, pil_image_to_jpeg_bytes
+from PIL import Image
 import io
-
-# Impor fungsi-fungsi Anda
 from backend.file_db_ops import add_file, get_files_by_user, get_file_for_download, delete_file
 from backend.auth import register_user,login_user
 from backend.superteks_algo import add_note, get_notes, update_note, delete_note
@@ -177,6 +177,33 @@ def delete_file_route(file_id):
         flash("Gagal menghapus file. File tidak ditemukan atau Anda tidak memiliki izin.", "danger")
         
     return redirect(url_for('dashboard'))
+
+@app.route('/steg_hide', methods=['GET','POST'])
+def steg_hide():
+    if request.method == 'POST':
+        f = request.files.get('cover')
+        message = request.form.get('message', '')
+        if not f or message == '':
+            return "Cover image and message required", 400
+        img = Image.open(f.stream).convert('RGB')
+        stego = embed_text_into_image(img, message)
+        out_bytes = pil_image_to_jpeg_bytes(stego, quality=95)
+        return send_file(io.BytesIO(out_bytes), mimetype='image/jpeg', as_attachment=True, download_name='stego.jpg')
+    return render_template('steg_hide.html')
+
+@app.route('/steg_extract', methods=['GET','POST'])
+def steg_extract():
+    if request.method == 'POST':
+        f = request.files.get('stego')
+        if not f:
+            return "Stego image required", 400
+        img = Image.open(f.stream).convert('RGB')
+        try:
+            message = extract_text_from_image(img)
+        except Exception as e:
+            return f"Failed to extract: {e}", 400
+        return render_template('steg_extracted.html', message=message)
+    return render_template('steg_extract.html')
 
 @app.route("/logout")
 def logout():

@@ -17,7 +17,7 @@ document.querySelectorAll('.nav-link').forEach(link => {
             dashboard: 'Dashboard',
             mynotes: 'Catatan Pribadi',
             myfiles: 'File Pribadi',
-            mypictures: 'Galeri Pribadi'
+            mystegano: 'Sembunyikan pesan'
         };
 
         document.querySelector('.page-title').textContent = titles[sectionName] || 'Dashboard';
@@ -117,3 +117,201 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+// MyStegano - Hide Message Form
+const hideMessageForm = document.getElementById("hideMessageForm")
+const uploadArea = document.getElementById("uploadArea")
+const imageInput = document.getElementById("imageInput")
+const imagePreview = document.getElementById("imagePreview")
+const previewImage = document.getElementById("previewImage")
+const removeImageBtn = document.getElementById("removeImageBtn")
+const messageInput = document.getElementById("messageInput")
+
+// Upload area click handler
+uploadArea.addEventListener("click", () => {
+  imageInput.click()
+})
+
+// Drag and drop
+uploadArea.addEventListener("dragover", (e) => {
+  e.preventDefault()
+  uploadArea.style.borderColor = "#667eea"
+  uploadArea.style.backgroundColor = "#f8f9ff"
+})
+
+uploadArea.addEventListener("dragleave", () => {
+  uploadArea.style.borderColor = "#ccc"
+  uploadArea.style.backgroundColor = "transparent"
+})
+
+uploadArea.addEventListener("drop", (e) => {
+  e.preventDefault()
+  uploadArea.style.borderColor = "#ccc"
+  uploadArea.style.backgroundColor = "transparent"
+
+  const files = e.dataTransfer.files
+  if (files.length > 0) {
+    imageInput.files = files
+    handleImageSelect()
+  }
+})
+
+// Image input change handler
+imageInput.addEventListener("change", handleImageSelect)
+
+function handleImageSelect() {
+  const file = imageInput.files[0]
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      previewImage.src = e.target.result
+      imagePreview.style.display = "block"
+    }
+    reader.readAsDataURL(file)
+  }
+}
+
+// Remove image button
+removeImageBtn.addEventListener("click", () => {
+  imageInput.value = ""
+  imagePreview.style.display = "none"
+})
+
+// Hide message form submit - UI validation only
+hideMessageForm.addEventListener("submit", async (e) => {
+  e.preventDefault()
+
+  const message = messageInput.value.trim()
+  if (!message) {
+    alert("Silakan masukkan pesan")
+    return
+  }
+
+  if (!imageInput.files[0]) {
+    alert("Silakan pilih gambar")
+    return
+  }
+
+  if (message.length > 1000) {
+    alert("Pesan terlalu panjang (maksimal 1000 karakter)")
+    return
+  }
+
+  // Send to backend API for steganography encoding
+  console.log("[v0] Form ready for backend submission")
+  console.log("[v0] Message length:", message.length)
+  console.log("[v0] Image file:", imageInput.files[0].name)
+
+  // TODO: Replace with actual backend API call
+  // Example:
+  // const formData = new FormData(hideMessageForm)
+  // const response = await fetch('/api/stegano/hide', { method: 'POST', body: formData })
+
+  alert("Form siap untuk diproses di backend! Silakan integrasikan dengan API Anda.")
+})
+
+// Reveal Message Form
+const revealMessageForm = document.getElementById("revealMessageForm")
+const uploadAreaReveal = document.getElementById("uploadAreaReveal")
+const revealImageInput = document.getElementById("revealImageInput")
+const revealImagePreview = document.getElementById("revealImagePreview")
+const revealPreviewImage = document.getElementById("revealPreviewImage")
+const removeRevealImageBtn = document.getElementById("removeRevealImageBtn")
+const revealResult = document.getElementById("revealResult")
+const noMessageAlert = document.getElementById("noMessageAlert")
+const revealedMessage = document.getElementById("revealedMessage")
+
+// Upload area click handler for reveal
+uploadAreaReveal.addEventListener("click", () => {
+  revealImageInput.click()
+})
+
+// Drag and drop for reveal
+uploadAreaReveal.addEventListener("dragover", (e) => {
+  e.preventDefault()
+  uploadAreaReveal.style.borderColor = "#667eea"
+  uploadAreaReveal.style.backgroundColor = "#f8f9ff"
+})
+
+uploadAreaReveal.addEventListener("dragleave", () => {
+  uploadAreaReveal.style.borderColor = "#ccc"
+  uploadAreaReveal.style.backgroundColor = "transparent"
+})
+
+uploadAreaReveal.addEventListener("drop", (e) => {
+  e.preventDefault()
+  uploadAreaReveal.style.borderColor = "#ccc"
+  uploadAreaReveal.style.backgroundColor = "transparent"
+
+  const files = e.dataTransfer.files
+  if (files.length > 0) {
+    revealImageInput.files = files
+    handleRevealImageSelect()
+  }
+})
+
+// Image input change for reveal
+revealImageInput.addEventListener("change", handleRevealImageSelect)
+
+function handleRevealImageSelect() {
+  const file = revealImageInput.files[0]
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      revealPreviewImage.src = e.target.result
+      revealImagePreview.style.display = "block"
+    }
+    reader.readAsDataURL(file)
+  }
+}
+
+// Remove reveal image button
+removeRevealImageBtn.addEventListener("click", () => {
+  revealImageInput.value = ""
+  revealImagePreview.style.display = "none"
+  revealResult.style.display = "none"
+  noMessageAlert.style.display = "none"
+})
+
+// Reveal message form submit - UI validation only
+revealMessageForm.addEventListener("submit", async (e) => {
+  e.preventDefault()
+
+  if (!revealImageInput.files[0]) {
+    alert("Silakan pilih gambar")
+    return
+  }
+
+  // Send to backend API for steganography decoding
+  console.log("[v0] Form ready for backend submission")
+  console.log("[v0] Image file:", revealImageInput.files[0].name)
+
+  // TODO: Replace with actual backend API call
+  // Example:
+  // const formData = new FormData(revealMessageForm)
+  // const response = await fetch('/api/stegano/reveal', { method: 'POST', body: formData })
+  // const data = await response.json()
+  // if (data.message) {
+  //   revealedMessage.textContent = data.message
+  //   revealResult.style.display = "block"
+  //   noMessageAlert.style.display = "none"
+  // } else {
+  //   revealResult.style.display = "none"
+  //   noMessageAlert.style.display = "block"
+  // }
+
+  alert("Form siap untuk diproses di backend! Silakan integrasikan dengan API Anda.")
+})
+
+// Copy message button
+document.getElementById("copyMessageBtn")?.addEventListener("click", () => {
+  const message = revealedMessage.textContent
+  navigator.clipboard
+    .writeText(message)
+    .then(() => {
+      alert("Pesan berhasil disalin ke clipboard!")
+    })
+    .catch((err) => {
+      console.error("Gagal menyalin pesan:", err)
+    })
+})

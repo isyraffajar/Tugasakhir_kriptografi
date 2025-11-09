@@ -285,6 +285,7 @@ body {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -546,9 +547,9 @@ body {
     font-size: 14px;
     line-height: 1.5;
     margin-bottom: 0;
-    white-space: nowrap;      
-    overflow: hidden;          
-    text-overflow: ellipsis;   
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .note-footer {
@@ -724,7 +725,7 @@ body {
         width: 100%;
     }
 
-    .row > div {
+    .row>div {
         margin-bottom: 15px;
     }
 
@@ -766,140 +767,268 @@ body {
 
 /* Body styling */
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
 }
 
 .bg-light {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
 }
 
 /* Card styling for auth pages */
 .card {
-  border: none;
-  border-radius: 12px;
-  background-color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    background-color: #ffffff;
 }
 
 .card-body {
-  border-radius: 12px;
+    border-radius: 12px;
 }
 
 /* Form controls styling */
 .form-control {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 14px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .form-control:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
 }
 
 .form-control::placeholder {
-  color: #999;
+    color: #999;
 }
 
 /* Label styling */
 .form-label {
-  color: #333;
-  font-size: 14px;
-  margin-bottom: 8px;
+    color: #333;
+    font-size: 14px;
+    margin-bottom: 8px;
 }
 
 .fw-500 {
-  font-weight: 500;
+    font-weight: 500;
 }
 
 .fw-600 {
-  font-weight: 600;
+    font-weight: 600;
 }
 
 /* Button styling */
 .btn-primary {
-  background-color: #667eea;
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+    background-color: #667eea;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .btn-primary:hover {
-  background-color: #5568d3;
-  transform: translateY(-2px);
+    background-color: #5568d3;
+    transform: translateY(-2px);
 }
 
 .btn-primary:active {
-  transform: translateY(0);
+    transform: translateY(0);
 }
 
 /* Checkbox styling */
 .form-check-input {
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  cursor: pointer;
-  border: 1px solid #ddd;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #ddd;
 }
 
 .form-check-input:checked {
-  background-color: #667eea;
-  border-color: #667eea;
+    background-color: #667eea;
+    border-color: #667eea;
 }
 
 .form-check-label {
-  cursor: pointer;
-  color: #555;
-  font-size: 14px;
+    cursor: pointer;
+    color: #555;
+    font-size: 14px;
 }
 
 /* Error styling */
 .text-danger {
-  color: #dc3545 !important;
-  font-size: 12px;
-  margin-top: 4px;
+    color: #dc3545 !important;
+    font-size: 12px;
+    margin-top: 4px;
 }
 
 /* Link styling */
 a {
-  text-decoration: none;
-  color: #667eea;
+    text-decoration: none;
+    color: #667eea;
 }
 
 a:hover {
-  color: #5568d3;
+    color: #5568d3;
 }
 
 /* Text utilities */
 .min-vh-100 {
-  min-height: 100vh;
+    min-height: 100vh;
 }
 
 .text-muted {
-  color: #999 !important;
-  font-size: 14px;
+    color: #999 !important;
+    font-size: 14px;
 }
 
 .text-primary {
-  color: #667eea !important;
+    color: #667eea !important;
 }
 
 /* Shadow effect */
 .shadow-lg {
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsive adjustments */
 @media (max-width: 576px) {
-  .card {
-    margin: 20px;
-  }
+    .card {
+        margin: 20px;
+    }
 
-  .card-body {
-    padding: 30px !important;
-  }
+    .card-body {
+        padding: 30px !important;
+    }
+}
+
+/* MyStegano Section Styles */
+.nav-tabs {
+    border-bottom: 2px solid #e9ecef;
+}
+
+.nav-tabs .nav-link {
+    color: #666;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #667eea;
+    border-bottom-color: #667eea;
+}
+
+.nav-tabs .nav-link.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+    background-color: transparent;
+}
+
+.upload-area {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+    border-color: #667eea;
+    background-color: #f8f9ff;
+}
+
+.upload-area i {
+    font-size: 48px;
+    color: #ccc;
+    margin-bottom: 10px;
+}
+
+.upload-area p {
+    margin: 10px 0;
+    color: #666;
+    font-weight: 500;
+}
+
+.upload-area small {
+    display: block;
+    color: #999;
+    font-size: 12px;
+}
+
+.info-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.info-item i {
+    color: #667eea;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.info-item strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.info-item p {
+    font-size: 14px;
+    color: #666;
+}
+
+.result-message-box {
+    background-color: #f8f9fa;
+    border-left: 4px solid #667eea;
+    padding: 15px;
+    border-radius: 6px;
+    max-height: 300px;
+    overflow-y: auto;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.result-message-box p {
+    margin: 0;
+    color: #333;
+    line-height: 1.6;
+}
+
+.tips-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.tip-item {
+    display: flex;
+    gap: 12px;
+}
+
+.tip-number {
+    background-color: #667eea;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.tip-item p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
 }

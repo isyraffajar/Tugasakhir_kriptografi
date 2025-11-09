@@ -41,9 +41,9 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#mypictures" class="nav-link" data-section="mypictures">
+                    <a href="#mystegano" class="nav-link" data-section="mystegano">
                         <i class="bi bi-image"></i>
-                        <span>MyPicture</span>
+                        <span>MyStegano</span>
                     </a>
                 </li>
             </ul>
@@ -427,87 +427,212 @@
                         </div>
                     </div>
                 </section>
+                <!-- End of MyFile Section -->
 
-                <!-- MyPicture Section -->
-                <section id="mypictures-section" class="section">
+                <!-- MyStegano Section -->
+                <section id="mystegano-section" class="section">
                     <div class="container-fluid">
                         <div class="section-header">
-                            <h2 class="section-title">Galeri Pribadi</h2>
-                            <button class="btn btn-primary">
-                                <i class="bi bi-upload"></i> Upload Gambar
-                            </button>
+                            <h2 class="section-title">Steganografi - Sembunyikan Pesan dalam Gambar</h2>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 col-lg-3 mb-4">
-                                <div class="picture-card">
-                                    <img src="https://via.placeholder.com/250x200?text=Gambar+1" alt="Gallery Image">
-                                    <div class="picture-overlay">
-                                        <button class="btn btn-icon">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-icon">
-                                            <i class="bi bi-download"></i>
-                                        </button>
-                                        <button class="btn btn-icon">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+
+                        <!-- Tabs untuk dua fitur -->
+                        <ul class="nav nav-tabs mb-4" id="steganoTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="hide-tab" data-bs-toggle="tab"
+                                    data-bs-target="#hide-panel" type="button" role="tab">
+                                    <i class="bi bi-eye-slash"></i> Sembunyikan Pesan
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="reveal-tab" data-bs-toggle="tab"
+                                    data-bs-target="#reveal-panel" type="button" role="tab">
+                                    <i class="bi bi-eye"></i> Tampilkan Pesan
+                                </button>
+                            </li>
+                        </ul>
+
+                        <!-- Tab Content -->
+                        <div class="tab-content" id="steganoTabContent">
+                            <!-- Hide Message Tab -->
+                            <div class="tab-pane fade show active" id="hide-panel" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <div class="card content-card">
+                                            <div class="card-header">
+                                                <h5 class="card-title mb-0">Sembunyikan Pesan dalam Gambar</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <form id="hideMessageForm">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Pesan Rahasia</label>
+                                                        <textarea class="form-control" id="messageInput"
+                                                            placeholder="Masukkan pesan yang ingin disembunyikan..."
+                                                            rows="4"></textarea>
+                                                        <small class="text-muted d-block mt-1">Karakter maksimal:
+                                                            1000</small>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Pilih Gambar</label>
+                                                        <div class="upload-area" id="uploadArea">
+                                                            <i class="bi bi-cloud-upload"></i>
+                                                            <p>Drag and drop gambar di sini atau klik untuk memilih</p>
+                                                            <small class="text-muted">Tipe: JPG, PNG (Maksimal
+                                                                5MB)</small>
+                                                            <input type="file" id="imageInput" accept="image/*" hidden>
+                                                        </div>
+                                                        <div id="imagePreview" class="mt-3" style="display: none;">
+                                                            <img id="previewImage" src="/placeholder.svg" alt="Preview"
+                                                                class="img-thumbnail" style="max-width: 200px;">
+                                                            <button type="button" class="btn btn-sm btn-danger ms-2"
+                                                                id="removeImageBtn">Hapus</button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex gap-2">
+                                                        <button type="submit" class="btn btn-primary">
+                                                            <i class="bi bi-shield-check"></i> Sembunyikan & Download
+                                                        </button>
+                                                        <button type="reset" class="btn btn-outline-secondary">
+                                                            <i class="bi bi-arrow-clockwise"></i> Bersihkan
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="card content-card">
+                                            <div class="card-header">
+                                                <h5 class="card-title mb-0">Informasi</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="info-item">
+                                                    <i class="bi bi-info-circle"></i>
+                                                    <div>
+                                                        <strong>Cara Kerja</strong>
+                                                        <p class="mb-0">Pesan Anda akan disembunyikan dalam pixel gambar
+                                                            menggunakan teknik steganografi DCT (Discrete Cosine Transform).
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="info-item">
+                                                    <i class="bi bi-shield-lock"></i>
+                                                    <div>
+                                                        <strong>Keamanan</strong>
+                                                        <p class="mb-0">Pesan tidak terlihat secara visual dan gambar
+                                                            akan terlihat normal di mata manusia.</p>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="info-item">
+                                                    <i class="bi bi-lightning-charge"></i>
+                                                    <div>
+                                                        <strong>Kecepatan</strong>
+                                                        <p class="mb-0">Proses dilakukan secara real-time di browser
+                                                            Anda tanpa perlu upload ke server.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <small class="text-muted d-block mt-2">2024-11-05</small>
                             </div>
-                            <div class="col-md-6 col-lg-3 mb-4">
-                                <div class="picture-card">
-                                    <img src="https://via.placeholder.com/250x200?text=Gambar+2" alt="Gallery Image">
-                                    <div class="picture-overlay">
-                                        <button class="btn btn-icon">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-icon">
-                                            <i class="bi bi-download"></i>
-                                        </button>
-                                        <button class="btn btn-icon">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+
+                            <!-- Reveal Message Tab -->
+                            <div class="tab-pane fade" id="reveal-panel" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <div class="card content-card">
+                                            <div class="card-header">
+                                                <h5 class="card-title mb-0">Tampilkan Pesan dari Gambar</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <form id="revealMessageForm">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Pilih Gambar yang Berisi Pesan</label>
+                                                        <div class="upload-area" id="uploadAreaReveal">
+                                                            <i class="bi bi-cloud-upload"></i>
+                                                            <p>Drag and drop gambar yang sudah di-stegano di sini atau
+                                                                klik untuk memilih</p>
+                                                            <small class="text-muted">Tipe: JPG, PNG</small>
+                                                            <input type="file" id="revealImageInput" accept="image/*"
+                                                                hidden>
+                                                        </div>
+                                                        <div id="revealImagePreview" class="mt-3"
+                                                            style="display: none;">
+                                                            <img id="revealPreviewImage" src="/placeholder.svg"
+                                                                alt="Preview" class="img-thumbnail"
+                                                                style="max-width: 200px;">
+                                                            <button type="button" class="btn btn-sm btn-danger ms-2"
+                                                                id="removeRevealImageBtn">Hapus</button>
+                                                        </div>
+                                                    </div>
+
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="bi bi-eye"></i> Tampilkan Pesan
+                                                    </button>
+                                                </form>
+
+                                                <!-- Result Container -->
+                                                <div id="revealResult" class="mt-4" style="display: none;">
+                                                    <div class="alert alert-success">
+                                                        <strong>Pesan Tersembunyi:</strong>
+                                                    </div>
+                                                    <div class="result-message-box">
+                                                        <p id="revealedMessage"></p>
+                                                    </div>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2"
+                                                        id="copyMessageBtn">
+                                                        <i class="bi bi-clipboard"></i> Salin Pesan
+                                                    </button>
+                                                </div>
+
+                                                <div id="noMessageAlert" class="mt-4" style="display: none;">
+                                                    <div class="alert alert-warning">
+                                                        <i class="bi bi-exclamation-triangle"></i> Tidak ada pesan
+                                                        tersembunyi ditemukan dalam gambar ini.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="card content-card">
+                                            <div class="card-header">
+                                                <h5 class="card-title mb-0">Tips & Trik</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="tips-list">
+                                                    <div class="tip-item">
+                                                        <span class="tip-number">1</span>
+                                                        <p>Gunakan gambar dengan resolusi tinggi untuk pesan yang lebih
+                                                            panjang</p>
+                                                    </div>
+                                                    <div class="tip-item">
+                                                        <span class="tip-number">2</span>
+                                                        <p>Hindari kompresi gambar setelah menyembunyikan pesan</p>
+                                                    </div>
+                                                    <div class="tip-item">
+                                                        <span class="tip-number">3</span>
+                                                        <p>Pesan bersifat rahasia dan tidak terlihat secara visual</p>
+                                                    </div>
+                                                    <div class="tip-item">
+                                                        <span class="tip-number">4</span>
+                                                        <p>Bagikan gambar dengan aman tanpa perlu khawatir pesan
+                                                            terbongkar</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <small class="text-muted d-block mt-2">2024-11-04</small>
-                            </div>
-                            <div class="col-md-6 col-lg-3 mb-4">
-                                <div class="picture-card">
-                                    <img src="https://via.placeholder.com/250x200?text=Gambar+3" alt="Gallery Image">
-                                    <div class="picture-overlay">
-                                        <button class="btn btn-icon">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-icon">
-                                            <i class="bi bi-download"></i>
-                                        </button>
-                                        <button class="btn btn-icon">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <small class="text-muted d-block mt-2">2024-11-03</small>
-                            </div>
-                            <div class="col-md-6 col-lg-3 mb-4">
-                                <div class="picture-card">
-                                    <img src="https://via.placeholder.com/250x200?text=Gambar+4" alt="Gallery Image">
-                                    <div class="picture-overlay">
-                                        <button class="btn btn-icon">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-icon">
-                                            <i class="bi bi-download"></i>
-                                        </button>
-                                        <button class="btn btn-icon">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <small class="text-muted d-block mt-2">2024-11-02</small>
                             </div>
                         </div>
                     </div>
+                          
                 </section>
             </div>
         </main>
