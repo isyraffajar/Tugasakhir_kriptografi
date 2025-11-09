@@ -133,13 +133,13 @@ def upload_file_route():
     
     if 'file' not in request.files:
         flash("Tidak ada file yang dipilih", "danger")
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('index'))
         
     file = request.files['file']
     
     if file.filename == '':
         flash("Tidak ada file yang dipilih", "danger")
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('index'))
         
     if file:
         user_id = session['user_id']
@@ -151,7 +151,7 @@ def upload_file_route():
         
         flash("File berhasil di-upload dan dienkripsi!", "success")
         
-    return redirect(url_for('index')) # Arahkan kembali ke dashboard
+    return redirect(url_for('index')) # Arahkan kembali ke index
 
 @app.route("/download_file/<int:file_id>")
 def download_file_route(file_id):
@@ -164,7 +164,7 @@ def download_file_route(file_id):
     
     if filename is None:
         flash("File tidak ditemukan atau Anda tidak punya akses.", "danger")
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('index'))
         
     # Kirim file kembali ke browser
     return send_file(
@@ -186,7 +186,7 @@ def delete_file_route(file_id):
     else:
         flash("Gagal menghapus file. File tidak ditemukan atau Anda tidak memiliki izin.", "danger")
         
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('index'))
 
 @app.route("/steg_hide", methods=["POST"])
 def steg_hide():
