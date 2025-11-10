@@ -30,9 +30,6 @@ def register_user(username, email, password):
 def login_user(email, password):
     """
     Fungsi untuk login user.
-    email: string, input user
-    password: string, input user
-    return: tuple (True/False, message)
     """
     conn = get_db()
     cursor = conn.cursor()
