@@ -1,91 +1,143 @@
 import string
+import re
 
-# Full ASCII 32-126
-ASCII_CHARS = ''.join([chr(i) for i in range(32, 127)])
+# ASCII printable 32–126 (95 chars)
+ASCII_CHARS = ''.join(chr(i) for i in range(32, 127)) + "\n"
+
+GRID_SIZE = 10  # 10x10 matrix (100 slots)
+
 
 def generate_playfair_matrix(key: str):
-    """
-    Generate Playfair matrix 10x10 (atau sesuai kebutuhan) dari key.
-    Untuk full ASCII, kita buat 10x10 grid cukup untuk 95 karakter.
-    """
+    """Generate Playfair matrix 10x10 dengan karakter unik."""
     seen = set()
-    matrix = []
+    matrix_list = []
 
-    # Masukkan karakter dari key dulu
-    for char in key:
-        if char not in seen and char in ASCII_CHARS:
-            seen.add(char)
-            matrix.append(char)
+    # Masukkan karakter key dulu
+    for ch in key:
+        if ch in ASCII_CHARS and ch not in seen:
+            seen.add(ch)
+            matrix_list.append(ch)
 
-    # Masukkan karakter ASCII yang belum ada
-    for char in ASCII_CHARS:
-        if char not in seen:
-            seen.add(char)
-            matrix.append(char)
+    # Tambahkan ASCII yang belum ada
+    for ch in ASCII_CHARS:
+        if ch not in seen:
+            seen.add(ch)
+            matrix_list.append(ch)
+
+    # Tambah padding karakter unik seperti '\x00'
+    padding_char = '\x00'
+    while len(matrix_list) % GRID_SIZE != 0:
+        if padding_char not in seen:
+            matrix_list.append(padding_char)
+            seen.add(padding_char)
+        else:
+            padding_char = chr(ord(padding_char) + 1)
 
     # Bentuk matrix 10x10
-    grid_size = 10
-    # Pastikan semua row panjang sama (padding jika perlu)
-    while len(matrix) % grid_size != 0:
-        matrix.append(' ')  # padding karakter agar row penuh
-    matrix_grid = [matrix[i:i+grid_size] for i in range(0, len(matrix), grid_size)]
-    return matrix_grid
+    matrix = [matrix_list[i:i + GRID_SIZE] for i in range(0, len(matrix_list), GRID_SIZE)]
 
-def find_position(matrix, char):
-    for i, row in enumerate(matrix):
-        for j, c in enumerate(row):
-            if c == char:
-                return i, j
-    return None, None
+    # Buat lookup posisi huruf --> O(1) lookup
+    pos = {matrix[i][j]: (i, j) for i in range(GRID_SIZE) for j in range(GRID_SIZE)}
 
-def playfair_encrypt(text, key):
-    matrix = generate_playfair_matrix(key)
+    return matrix, pos
+
+
+def prepare_text(text: str, filler='\x00'):
+    """Siapkan teks agar valid untuk Playfair:
+       - pasangan huruf sama → sisipkan filler
+       - jika ganjil → tambah filler
+    """
+
+    cleaned = ""
+    i = 0
+
+    while i < len(text):
+        a = text[i]
+        b = text[i + 1] if i + 1 < len(text) else None
+
+        if b is None:
+            cleaned += a + filler
+            break
+
+        if a == b:
+            cleaned += a + filler
+            i += 1
+        else:
+            cleaned += a + b
+            i += 2
+
+    return cleaned
+
+
+def playfair_encrypt(text: str, key: str):
+    matrix, pos = generate_playfair_matrix(key)
+    text = prepare_text(text)
+
     result = ""
-
-    # Tambahkan padding jika panjang ganjil
-    if len(text) % 2 != 0:
-        text += " "  # bisa pakai karakter padding lain
 
     for i in range(0, len(text), 2):
         a, b = text[i], text[i+1]
-        row_a, col_a = find_position(matrix, a)
-        row_b, col_b = find_position(matrix, b)
+        row_a, col_a = pos[a]
+        row_b, col_b = pos[b]
 
-        if row_a == row_b:
-            # Sama baris: geser kanan
-            result += matrix[row_a][(col_a + 1) % 10]
-            result += matrix[row_b][(col_b + 1) % 10]
-        elif col_a == col_b:
-            # Sama kolom: geser bawah
-            result += matrix[(row_a + 1) % 10][col_a]
-            result += matrix[(row_b + 1) % 10][col_b]
-        else:
-            # Kotak persegi: tukar kolom
+        if row_a == row_b:  # sama baris → geser kanan
+            result += matrix[row_a][(col_a + 1) % GRID_SIZE]
+            result += matrix[row_b][(col_b + 1) % GRID_SIZE]
+
+        elif col_a == col_b:  # sama kolom → geser bawah
+            result += matrix[(row_a + 1) % GRID_SIZE][col_a]
+            result += matrix[(row_b + 1) % GRID_SIZE][col_b]
+
+        else:  # rectangle rule
             result += matrix[row_a][col_b]
             result += matrix[row_b][col_a]
 
     return result
 
-def playfair_decrypt(ciphertext, key):
-    matrix = generate_playfair_matrix(key)
+
+def playfair_decrypt(ciphertext: str, key: str):
+    matrix, pos = generate_playfair_matrix(key)
     result = ""
 
     for i in range(0, len(ciphertext), 2):
         a, b = ciphertext[i], ciphertext[i+1]
-        row_a, col_a = find_position(matrix, a)
-        row_b, col_b = find_position(matrix, b)
+        row_a, col_a = pos[a]
+        row_b, col_b = pos[b]
 
-        if row_a == row_b:
-            # Sama baris: geser kiri
-            result += matrix[row_a][(col_a - 1) % 10]
-            result += matrix[row_b][(col_b - 1) % 10]
-        elif col_a == col_b:
-            # Sama kolom: geser atas
-            result += matrix[(row_a - 1) % 10][col_a]
-            result += matrix[(row_b - 1) % 10][col_b]
-        else:
-            # Kotak persegi: tukar kolom
+        if row_a == row_b:  # sama baris → geser kiri
+            result += matrix[row_a][(col_a - 1) % GRID_SIZE]
+            result += matrix[row_b][(col_b - 1) % GRID_SIZE]
+
+        elif col_a == col_b:  # sama kolom → geser atas
+            result += matrix[(row_a - 1) % GRID_SIZE][col_a]
+            result += matrix[(row_b - 1) % GRID_SIZE][col_b]
+
+        else:  # rectangle rule
             result += matrix[row_a][col_b]
             result += matrix[row_b][col_a]
-
+    
+    result = result.replace('\x00', '')
     return result
+
+def sanitize_text_for_playfair(text: str) -> str:
+    """
+    Membersihkan teks dari karakter yang tidak dikenali Playfair.
+    Mengubah tanda kutip miring → kutip biasa.
+    Mengubah strip panjang → strip biasa.
+    Menghapus simbol aneh.
+    """
+    replacements = {
+        "“": '"',  "”": '"',
+        "‘": "'",  "’": "'",
+        "—": "-",  "–": "-",
+        "…": "...",
+    }
+
+    for bad, good in replacements.items():
+        text = text.replace(bad, good)
+
+    # Buang karakter NON ASCII (Playfair tidak mendukung unicode kompleks)
+    text = re.sub(r"[^A-Za-z0-9 .,!?;:'\"()\-\/\n]", "", text)
+
+    return text
+

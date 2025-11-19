@@ -1,6 +1,6 @@
 from Crypto.Cipher import DES3
 from Crypto.Util.Padding import pad, unpad
-from backend.playfair_algo import playfair_encrypt, playfair_decrypt
+from backend.playfair_algo import playfair_encrypt, playfair_decrypt, sanitize_text_for_playfair
 from backend.blowfish_algo import encrypt_blowfish, decrypt_blowfish
 from backend.db import get_db
 import base64
@@ -29,11 +29,16 @@ def decrypt_3des(ciphertext: bytes) -> str:
 # ----------------------------
 # Super Enkripsi (Playfair + 3DES)
 # ----------------------------
-def super_encrypt(text: str, pf_key: str) -> bytes:
-    """Enkripsi gabungan: Playfair + 3DES"""
-    pf_text = playfair_encrypt(text, pf_key)
-    ciphertext_bytes = encrypt_3des(pf_text)
-    return base64.b64encode(ciphertext_bytes).decode('utf-8')
+def super_encrypt(text: str, pf_key: str) -> str:
+    """
+    Enkripsi gabungan: (Normalisasi → Playfair → 3DES → Base64)
+    Return adalah STRING siap simpan DB.
+    """
+    clean_text = sanitize_text_for_playfair(text)
+    pf_text = playfair_encrypt(clean_text, pf_key)
+    cipher_bytes = encrypt_3des(pf_text)
+    return base64.b64encode(cipher_bytes).decode('utf-8')
+
 
 def super_decrypt(ciphertext_b64: str, pf_key: str) -> str:
     """Dekripsi gabungan: 3DES -> Playfair"""
